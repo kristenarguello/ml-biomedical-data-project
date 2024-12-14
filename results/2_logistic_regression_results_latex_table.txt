@@ -1,0 +1,9 @@
+\begin{tabular}{lrlrl}
+\toprule
+Penalty & Mean ROC-AUC & ROC-AUC CI & Mean F1 & F1 CI \\
+\midrule
+NO & 0.554000 & [0.544 , 0.564] & 0.225000 & [0.128 , 0.323] \\
+L1 & 0.484000 & [0.481 , 0.488] & 0.182000 & [0.173 , 0.192] \\
+L2 & 0.552000 & [0.549 , 0.555] & 0.210000 & [0.19 , 0.23] \\
+\bottomrule
+\end{tabular}

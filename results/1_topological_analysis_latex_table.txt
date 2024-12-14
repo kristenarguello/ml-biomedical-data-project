@@ -1,0 +1,15 @@
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Diameter & 6.000000 \\
+Girth & 3.000000 \\
+Radius & 0.000000 \\
+Average Path Length & 2.325839 \\
+Density & 0.007721 \\
+Average Degree & 3.953216 \\
+Assortivity Degree & 0.689971 \\
+Transitivity Average & 0.777568 \\
+Transitivity Undirected & 0.706325 \\
+\bottomrule
+\end{tabular}

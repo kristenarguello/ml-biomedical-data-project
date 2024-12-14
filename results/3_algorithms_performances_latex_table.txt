@@ -1,0 +1,9 @@
+\begin{tabular}{lrr}
+\toprule
+Algorithm & ROC AUC & F1 \\
+\midrule
+svc & 0.664152 & 0.406352 \\
+rf & 0.731476 & 0.445269 \\
+gb & 0.705259 & 0.401877 \\
+\bottomrule
+\end{tabular}
