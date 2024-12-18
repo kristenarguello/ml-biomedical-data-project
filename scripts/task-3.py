@@ -513,9 +513,21 @@ results_df = pandas.DataFrame(
         # + [stacking_score["test_precision"].mean()],
     }
 )
+
+# make a dataframe with the best parameters
+best_params = all_results[best_algorithm]["estimator"][best_index][
+    "classifier"
+].best_params_
+best_params = pandas.DataFrame(best_params, index=[0])
+
+
 results_df.to_csv("results/3_algorithms_performances.csv", index=False)
 with open("results/3_algorithms_performances_latex_table.txt", "w") as f:
     f.write(results_df.to_latex(index=False))
+
+
+# %%
+
 
 end_ever = time.time()
 # format time in hours, minutes and seconds

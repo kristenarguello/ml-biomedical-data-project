@@ -363,7 +363,7 @@ cdr_categories = ["None", "Very Mild", "Mild", "Moderate", "Severe"]
 # Plotting heatmaps for each group
 for ax, (cdr_value, group) in zip(axes, grouped):
     # Calculate proportions for each CDR category across visits
-    proportions = group.apply(lambda x: x.value_counts(normalize=True)).fillna(0)
+    proportions = group.apply(lambda x: x.value_counts()).fillna(0)
     for category in range(5):
         if category not in proportions.index:
             proportions.loc[category] = 0
@@ -390,16 +390,15 @@ for ax, (cdr_value, group) in zip(axes, grouped):
 
 plt.savefig("results/2_disease_progression_over_time.png", bbox_inches="tight", dpi=300)
 
+# %%
+# make a df with the value count distribution
+df_value_counts = data["worsening"].value_counts().reset_index()
+df_value_counts.columns = ["Worsening", "Proportion"]
+df_value_counts["Worsening"] = df_value_counts["Worsening"].replace({0: "No", 1: "Yes"})
+df_value_counts.to_csv("results/2_worsening_value_counts.csv", index=False)
+
+# to latex
+with open("results/2_worsening_value_counts_latex_table.txt", "w") as f:
+    f.write(df_value_counts.to_latex(index=False))
 
 # %%
-# dataframe to show best parameters for each grid
-df_best_params = pandas.DataFrame(
-    {
-        "Penalty": ["No", "L1", "L2"],
-        "Best Parameters": [
-            grid.best_params_,
-            grid_l1.best_params_,
-            grid_l2.best_params_,
-        ],
-    }
-)

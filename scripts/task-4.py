@@ -15,6 +15,8 @@ from sklearn.model_selection import KFold, train_test_split
 import time
 from keras_hub import layers
 
+start_time = time.time()
+
 with lzma.open("data/cath.tar.xz") as f:
     cath = f.read()
 
@@ -33,6 +35,7 @@ def clean_up_sq60_line(line: str):
 
 
 sq60_lines = []
+# with open("processed/proteins/seqs_nonredundant_S40.fa", "r") as f:
 with open("processed/proteins/seqs_S60.fa", "r") as f:
     sq60_lines = [clean_up_sq60_line(l) for l in f.readlines()]
 
@@ -136,7 +139,7 @@ x = keras.preprocessing.sequence.pad_sequences(x, MAX_LENGTH, truncating="post")
 
 # %%
 # transformer
-
+print("STARTING BUILDING THE TRANSFORMER")
 
 TOKENS = len(vectorizer.get_vocabulary()) + 1
 CLASSES = lb.classes_.shape[0]
@@ -181,7 +184,7 @@ def build_transformer(hp):
     model.compile(
         optimizer=opt,  # type: ignore
         loss="categorical_crossentropy",
-        metrics=["accuracy", "precision", "recall", "AUC"],  # type: ignore
+        metrics=["accuracy", "AUC"],  # type: ignore
     )
     return model
 
@@ -190,9 +193,10 @@ def build_transformer(hp):
 # define tuner and stop early criteria
 SEED = 34
 
+print("STARTING THE TUNER")
 tuner = kt.RandomSearch(
     build_transformer,
-    objective="val_accuracy",
+    objective="val_loss",
     max_trials=10,
     seed=SEED,
     directory="tuner-results",
@@ -267,7 +271,7 @@ for train_index, val_index in kf.split(x_tune, y_tune):
             "Trial Number": i + 1,
             "Trial ID": trial.trial_id,
             "hyperparameters": trial.hyperparameters.values,
-            "Validation Accuracy": trial.score,
+            "Validation Score": trial.score,
             "Elapsed Time": time.time() - start,
         }
         all_trials_results.append(trial_results)
@@ -294,6 +298,7 @@ average_val_loss = np.mean(all_val_losses, axis=0)
 average_val_auc = np.mean(all_val_auc, axis=0)
 # %%
 
+print("GETTING THE BEST EPOCH")
 best_epoch = np.argmin(average_val_loss)
 
 
@@ -386,7 +391,8 @@ best_epoch_auc = np.mean([f["Validation AUC"] for f in best_epoch_fold_results],
 
 evaluation_losses = [f["Evaluation"][0] for f in best_epoch_fold_results]
 evaluation_accuracies = [f["Evaluation"][1] for f in best_epoch_fold_results]
-evaluation_AUC = [f["Evaluation"][4] for f in best_epoch_fold_results]
+# %%
+evaluation_AUC = [f["Evaluation"][2] for f in best_epoch_fold_results]
 
 evaluation_df = pandas.DataFrame(
     {
@@ -399,6 +405,7 @@ evaluation_df = pandas.DataFrame(
 evaluation_df.set_index("Fold")
 evaluation_df.to_csv("results/4_evaluation.csv", index=False)
 
+print("PLOTTING THE GRAPHS")
 
 columns = [
     "Train Accuracy",
@@ -437,8 +444,9 @@ hyperparameters_trials = pandas.json_normalize(all_trials_results_df["hyperparam
 all_trials_results_df = all_trials_results_df.drop(columns=["hyperparameters"]).join(
     hyperparameters_trials
 )
+# %%
 all_trials_results_df = all_trials_results_df.sort_values(
-    by=["Fold", "Validation Accuracy"], ascending=[True, False]
+    by=["Fold", "Validation Score"], ascending=[True, False]
 )
 
 all_trials_results_df.to_csv("results/4_all_trials_results.csv", index=False)
@@ -528,3 +536,9 @@ ax2.legend()
 plt.tight_layout()
 # plt.show()
 plt.savefig("results/4_nn_performance_best_epoch.png", bbox_inches="tight")
+
+end_time = time.time()
+# print with the formatted elapsed time
+print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(end_time - start_time))}")
+
+# %%
