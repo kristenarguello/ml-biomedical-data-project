@@ -1,0 +1,6 @@
+,Trial Number,Validation Accuracy,n_layers,learning_rate
+2,3,0.65625,1,0.0001
+1,2,0.78125,2,0.0001
+0,1,0.96875,3,0.001
+3,4,,1,0.001
+4,5,,2,0.001

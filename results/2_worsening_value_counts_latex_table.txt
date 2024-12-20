@@ -1,0 +1,8 @@
+\begin{tabular}{lr}
+\toprule
+Worsening & Proportion \\
+\midrule
+No & 119 \\
+Yes & 31 \\
+\bottomrule
+\end{tabular}

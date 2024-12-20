@@ -1,0 +1,9 @@
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Loss & 0.667456 \\
+Accuracy & 0.860537 \\
+AUC & 0.959479 \\
+\bottomrule
+\end{tabular}

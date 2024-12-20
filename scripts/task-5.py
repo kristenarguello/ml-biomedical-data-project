@@ -1,13 +1,39 @@
+# %%
 import numpy as np
 import keras
 from keras import layers
 import matplotlib.pyplot as plt
 from sklearn.utils import class_weight
+import zipfile
+import os
+
+
+def unzip_file(zip_file_path, extract_to_path):
+    # Check if the zip file exists
+    if not os.path.exists(zip_file_path):
+        print(f"The file {zip_file_path} does not exist.")
+        return
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(extract_to_path):
+        os.makedirs(extract_to_path)
+
+    # Open the zip file
+    with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+        # Extract all the contents into the specified directory
+        zip_ref.extractall(extract_to_path)
+        print(f"Extracted all files to {extract_to_path}")
+
+
+zip_file_path = "data/retinal-oct-sample.zip"
+extract_to_path = "processed/retinal-oct-sample"
+unzip_file(zip_file_path, extract_to_path)
+
 
 # Constants
-TRAIN_DIR = "data/retinal-oct-sample-zip/train_sample2"
-VAL_DIR = "data/retinal-oct-sample-zip/val"
-TEST_DIR = "data/retinal-oct-sample-zip/test"
+TRAIN_DIR = "processed/retinal-oct-sample/train_sample2"
+VAL_DIR = "processed/retinal-oct-sample/val"
+TEST_DIR = "processed/retinal-oct-sample/test"
 IMG_SIZE = (128, 128)
 BATCH_SIZE = 128
 EPOCHS = 36
@@ -84,6 +110,7 @@ print("y_val shape:", y_val.shape)
 print("x_test shape:", x_test.shape)
 print("y_test shape:", y_test.shape)
 
+# %%
 
 # Define the model
 import keras_tuner as kt
@@ -179,7 +206,7 @@ import pandas
 
 results_df = pandas.DataFrame({"Metric": ["Loss", "Accuracy", "AUC"], "Value": score})
 
-with open("5_cnn_results.txt", "w") as f:
+with open("results/5_cnn_results.txt", "w") as f:
     f.write(results_df.to_latex(index=False))
 
 
@@ -189,9 +216,9 @@ all_trials_results_df = all_trials_results_df.drop(columns=["hyperparameters"]).
     hyperparameters_trials
 )
 all_trials_results_df = all_trials_results_df.sort_values(by=["Validation Accuracy"])
-all_trials_results_df.to_csv("5_hyperparametr_tuning_results.csv")
+all_trials_results_df.to_csv("results/5_hyperparametr_tuning_results.csv")
 
-with open("5_latex_table.txt", "w") as f:
+with open("results/5_latex_table.txt", "w") as f:
     f.write(all_trials_results_df.to_latex(index=False))
 
 import matplotlib.pyplot as plt
@@ -229,7 +256,7 @@ plt.legend()
 
 # Adjust layout to prevent overlap
 plt.tight_layout()
-plt.savefig("5_epochs_results.png", dpi=300)
+plt.savefig("results/5_epochs_results.png", dpi=300)
 
 
 import numpy as np
@@ -249,7 +276,7 @@ cm = confusion_matrix(y_true, y_pred)
 # Plot the confusion matrix
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(NUM_CLASSES))
 disp.plot(cmap=plt.cm.Blues)  # type: ignore
-plt.savefig("5_confusion_matrix.png")
+plt.savefig("results/5_confusion_matrix.png")
 
 
 import numpy as np
@@ -284,7 +311,7 @@ plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
 plt.title("Receiver Operating Characteristic (ROC) Curves")
 plt.legend(loc="lower right")
-plt.savefig("5_roc_auc_curve.png", dpi=300)
+plt.savefig("results/5_roc_auc_curve.png", dpi=300)
 
 
 from tf_explain.core.occlusion_sensitivity import OcclusionSensitivity
@@ -303,7 +330,7 @@ for i, name in enumerate(class_names):
     axes[i].axis("off")
     axes[i].set_title(f"CNN - class: {name}")
 
-plt.savefig("5_occlusion_sensitivity_cnn.png", dpi=300)
+plt.savefig("results/5_occlusion_sensitivity_cnn.png", dpi=300)
 
 
 # --------------------- Define the VGG16 Transfer Learning Model ---------------------
@@ -423,7 +450,7 @@ cm = confusion_matrix(y_true, y_pred)
 # Plot the confusion matrix
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(NUM_CLASSES))
 disp.plot(cmap=plt.cm.Blues)  # type: ignore
-plt.savefig("5_confusion_matrix_transfer.png")
+plt.savefig("results/5_confusion_matrix_transfer.png")
 
 
 # Extract the accuracy and loss values for training and validation
@@ -458,7 +485,7 @@ plt.legend()
 
 # Adjust layout to prevent overlap
 plt.tight_layout()
-plt.savefig("5_epochs_results_transfer.png", dpi=300)
+plt.savefig("results/5_epochs_results_transfer.png", dpi=300)
 
 
 explainer = OcclusionSensitivity()
@@ -474,12 +501,12 @@ for i, name in enumerate(class_names):
     axes[i].axis("off")
     axes[i].set_title(f"CNN - class: {name}")
 
-plt.savefig("5_occlusion_sensitivity_transfer.png", dpi=300)
+plt.savefig("results/5_occlusion_sensitivity_transfer.png", dpi=300)
 
 
 results_df = pandas.DataFrame(
     {"Metric": ["Loss", "Accuracy", "AUC"], "Value": score_transfer}
 )
 
-with open("5_transfer_results.txt", "w") as f:
+with open("results/5_transfer_results.txt", "w") as f:
     f.write(results_df.to_latex(index=False))

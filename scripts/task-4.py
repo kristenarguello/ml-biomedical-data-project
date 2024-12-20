@@ -540,5 +540,3 @@ plt.savefig("results/4_nn_performance_best_epoch.png", bbox_inches="tight")
 end_time = time.time()
 # print with the formatted elapsed time
 print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(end_time - start_time))}")
-
-# %%

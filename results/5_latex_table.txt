@@ -1,0 +1,9 @@
+\begin{tabular}{rrrr}
+\toprule
+Trial Number & Validation Accuracy & n_layers & learning_rate \\
+\midrule
+3 & 0.656250 & 1 & 0.000100 \\
+2 & 0.781250 & 2 & 0.000100 \\
+1 & 0.968750 & 3 & 0.001000 \\
+\bottomrule
+\end{tabular}
